@@ -1,12 +1,10 @@
-FROM node:16.0 AS build-step
-
+pull the official base image
+FROM node:16.0
+# set working direction
 WORKDIR /app
 COPY package.json package-lock.json ./
 RUN npm install
-
+# add app
 COPY . .
-RUN npm run build
-
-FROM nginx:1.16-alpine
-COPY nginx.conf /etc/nginx/nginx.conf
-COPY --from=build-step /app/build /frontend/build
+# start app
+CMD ["npm", "start"]
