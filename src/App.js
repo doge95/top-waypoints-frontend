@@ -16,7 +16,7 @@ export default function App() {
 
   React.useEffect(() => {
     async function getAirports() {
-      const response = await fetch("http://topwaypoints:8088/getAirports");
+      const response = await fetch("http://topwaypoints-backend:8088/getAirports");
       const body = await response.json();
       setAirports(body);
       console.log(body);
@@ -28,7 +28,7 @@ export default function App() {
   const [data, setData] = React.useState([]);
 
   const handleClick = () => {
-    fetch(`http://topwaypoints:8088/getTopWaypoints?icao=${encodeURIComponent(airport)}&type=${encodeURIComponent(value)}`)
+    fetch(`http://topwaypoints-backend:8088/getTopWaypoints?icao=${encodeURIComponent(airport)}&type=${encodeURIComponent(value)}`)
       .then((response) => response.json())
       .then((json) => {
         setData(json)

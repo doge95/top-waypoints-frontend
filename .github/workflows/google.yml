@@ -25,9 +25,9 @@ on:
 env:
   PROJECT_ID: ${{ secrets.GKE_PROJECT }}
   GAR_LOCATION: us-east4 # TODO: update region of the Artifact Registry
-  # GKE_CLUSTER: cluster-1    # TODO: update to cluster name
-  # GKE_ZONE: us-central1-c   # TODO: update to cluster zone
-  # DEPLOYMENT_NAME: topwaypoints-frontend # TODO: update to deployment name
+  GKE_CLUSTER: autopilot-cluster-2    # TODO: update to cluster name
+  GKE_ZONE: us-east4   # TODO: update to cluster zone
+  DEPLOYMENT_NAME: topwaypoints-frontend # TODO: update to deployment name
   REPOSITORY: topwaypoints # TODO: update to Artifact Registry docker repository
   IMAGE: frontend
   TAG: ${{ github.ref_name }}
@@ -36,10 +36,6 @@ jobs:
   setup-build-publish-deploy:
     name: Setup, Build, Publish, and Deploy
     runs-on: ubuntu-latest
-
-    # permissions:
-    #   contents: 'read'
-    #   id-token: 'write'
 
     steps:
     - name: Checkout
@@ -61,3 +57,15 @@ jobs:
             docker build --tag "$GAR_LOCATION-docker.pkg.dev/$PROJECT_ID/$REPOSITORY/$IMAGE:$TAG" .
             docker push "$GAR_LOCATION-docker.pkg.dev/$PROJECT_ID/$REPOSITORY/$IMAGE:$TAG"
 
+    # Install helm
+    - name: Install Helm
+      run: |
+        curl https://raw.githubusercontent.com/helm/helm/master/scripts/get-helm-3 | bash
+
+    # Update the Deployment in GKE
+    - name: Deploy to GKE
+      run: |
+        gcloud container clusters get-credentials $GKE_CLUSTER --zone $GKE_ZONE --project $PROJECT_ID
+        helm upgrade $DEPLOYMENT_NAME oci://$GAR_LOCATION-docker.pkg.dev/$PROJECT_ID/$REPOSITORY/$DEPLOYMENT_NAME --install --set image=$GAR_LOCATION-docker.pkg.dev/$PROJECT_ID/$REPOSITORY/$IMAGE:$TAG
+        kubectl rollout status deployment/$DEPLOYMENT_NAME
+        kubectl get services -o wide
