@@ -1,4 +1,3 @@
-pull the official base image
 FROM node:16.0
 # set working direction
 WORKDIR /app
