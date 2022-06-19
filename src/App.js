@@ -40,6 +40,9 @@ export default function App() {
   return (
     <>
       <div className="container mt-2">
+        <h3>Get Top Waypoints</h3>
+      </div>         
+      <div className="container mt-2">
         <Form.Control as="select" value={airport} onChange={(e) => {setAirport(e.target.value)}}>
           <option value="airport">Select an Airport</option>;
           {airports.map((airport) => {
@@ -49,6 +52,10 @@ export default function App() {
         </Form.Control>
       </div>
       
+      <div className="container mt-2">
+        <h5>Choose SID or STAR</h5>
+      </div>   
+
       <div className="container mt-2">
         <ToggleButtonGroup
           name="type"
